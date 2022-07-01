@@ -1,15 +1,24 @@
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React from 'react';
+import React from "react";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Fontisto from "react-native-vector-icons/Fontisto";
 
-const CityCard = ({title, image, onPress}) => {
+const CityCard = ({ day, night, DayIcon, NightIcon, onPress }) => {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <View style={styles.cityContainer}>
-        <View style={styles.cityImage}>
-          <Image source={image} />
+        <View style={styles.detailContainer}>
+          <View style={styles.cityImage}>{DayIcon}</View>
+          <Text style={styles.textContainer}>{day}</Text>
         </View>
-        <View style={styles.cityDetailContainer}>
-          <Text style={styles.textContainer}>{title}</Text>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <View style={styles.cityImage}>{NightIcon}</View>
+          <Text style={styles.textContainer}>{night}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -21,27 +30,27 @@ export default CityCard;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    backgroundColor: 'white',
+    justifyContent: "flex-end",
   },
   cityContainer: {
-    backgroundColor: '#ebf5f4',
+    backgroundColor: "#edcd61",
     marginVertical: 15,
+    borderRadius: 15,
     padding: 10,
-    margin: 10,
-    flexDirection: 'row',
+    marginRight: 10,
   },
-  CityCard: {flexDirection: 'column'},
+  detailContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   cityImage: {
-    height: 100,
-    width: 100,
-    backgroundColor: 'pink',
+    height: 40,
+    width: 40,
+    borderRadius: 15,
   },
   textContainer: {
-    fontWeight: 'bold',
-    color: 'gray',
-    marginLeft: 10,
-    height: 100,
-    width: 150,
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });

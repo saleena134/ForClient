@@ -1,32 +1,52 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
-import React from 'react';
-import {useSelector} from 'react-redux';
-import axios from 'axios';
+import { Image, StyleSheet, Text, View } from "react-native";
+import React from "react";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import Header from "../component/Header";
+import styling from "../component/styling";
 
-const CitiesDetailes = ({route}) => {
+const CitiesDetailes = ({ route, navigation }) => {
   const listing = route.params;
-  const {title, id, url} = listing;
-  const cityDetails = useSelector(state => state.reducer);
-  const {newCityName} = useSelector(state => state.reducer);
+  // const { DayIcon, NightIcon, id, day } = listing;
+  const cityDetails = useSelector((state) => state.reducer);
+  const { newCityName, takeLocation } = useSelector((state) => state.reducer);
   React.useEffect(() => {
-    console.log('Entered New city name=====>', newCityName);
-    console.log('City details=====>', cityDetails);
+    console.log("Entered New city name=====>", newCityName);
+    console.log("City details=====>", cityDetails);
+    console.log("Location=====>", takeLocation);
   }, []);
-
+  const Details = [
+    { title: "Accuracy", text: takeLocation?.coords?.accuracy },
+    { title: "Altitude", text: takeLocation?.coords?.altitude },
+    { title: "Heading", text: takeLocation?.coords?.heading },
+    { title: "Speed", text: takeLocation?.coords?.speed },
+    { title: "Timestamp", text: takeLocation?.timestamp },
+  ];
   return (
     <View style={styles.container}>
+      <Header title={"Cities Details"} navigation={navigation} />
       <View style={styles.cityContainer}>
         <View style={styles.cityImage}>
-          <Image source={url} />
-        </View>
-        <View style={styles.cityDetailContainer}>
-          <Text style={styles.textContainer}>
-            <Text style={{fontWeight: 'bold', color: 'black'}}>Title</Text>{' '}
-            {title}
+          <Text style={[styling.headingText, { color: "black", fontSize: 20 }]}>
+            Details
           </Text>
-          <Text style={styles.textContainer}>
-            <Text style={{fontWeight: 'bold', color: 'black'}}>ID</Text> {id}
-          </Text>
+          {Details.map((value) => {
+            return (
+              <>
+                <Text
+                  style={[
+                    styles.textContainer,
+                    { color: "black", fontSize: 18 },
+                  ]}
+                >
+                  <Text style={[styles.text, { color: "gray", fontSize: 18 }]}>
+                    {value.title}
+                  </Text>{" "}
+                  {value.text}
+                </Text>
+              </>
+            );
+          })}
         </View>
       </View>
     </View>
@@ -37,25 +57,24 @@ export default CitiesDetailes;
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
     height: 500,
   },
   cityContainer: {
-    backgroundColor: 'ebf5f4',
+    backgroundColor: "#ebf5f4",
     padding: 10,
     marginVertical: 10,
   },
-  CitiesDetailes: {flexDirection: 'column'},
+  CitiesDetailes: { flexDirection: "column" },
   cityImage: {
     height: 300,
     width: 300,
-    backgroundColor: 'pink',
   },
   textContainer: {
     marginTop: 10,
-    fontWeight: 'bold',
-    color: 'gray',
+    fontWeight: "bold",
+    color: "gray",
   },
 });

@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/shukla.dheerajneosoftmail.com/Desktop/Projects/demo/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-be/values-be.xml",
+            "outputFile": "/Users/shukla.dheerajneosoftmail.com/Desktop/git_files/ForClient/android/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-be/values-be.xml",
             "map": [
                 {
                     "source": "/Users/shukla.dheerajneosoftmail.com/.gradle/caches/transforms-3/9f18c6b50baa776d71894ad120630276/transformed/core-1.6.0/res/values-be/values-be.xml",
