@@ -1,8 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Fontisto from "react-native-vector-icons/Fontisto";
+import { useSelector } from "react-redux";
+import styling from "../component/styling";
 
 const CityCard = ({ day, night, DayIcon, NightIcon, onPress }) => {
+  const { dailyWeather } = useSelector((state) => state.reducer);
+  useEffect(() => {
+    console.log("from checking", night);
+  }, []);
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <View style={styles.cityContainer}>
@@ -29,8 +35,8 @@ export default CityCard;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: "flex-end",
+    // backgroundColor: "red",
   },
   cityContainer: {
     backgroundColor: "#edcd61",

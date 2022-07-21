@@ -6,8 +6,11 @@ import {
   FlatList,
   TextInput,
   ImageBackground,
+  TouchableOpacity,
   Text,
   SafeAreaView,
+  Platform,
+  ActivityIndicator,
 } from "react-native";
 import React from "react";
 import { useEffect, useState } from "react";
@@ -16,42 +19,44 @@ import CitiesDetailes from "./CitiesDetailes";
 import CityCard from "./CityCard";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { getCity, getNewCity, getCurrentLocation } from "../redux/action";
+import {
+  getCity,
+  getNewCity,
+  getCurrentLocation,
+  getDailyWeather,
+} from "../redux/action";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import DateAndTime from "../component/DateAndTime";
 import styling from "../component/styling";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import Geolocation from "@react-native-community/geolocation";
-import Header from "../component/Header";
 
 const Cities = () => {
-  const [data, setData] = React.useState([]);
-  const [weather, setWeather] = React.useState({});
+  const [lat, setLat] = useState({});
+  const [long, setLong] = useState({});
+  const [weather, setWeather] = useState([]);
   const [location, setLocation] = React.useState("");
-  const { newCityName, takeLocation } = useSelector((state) => state.reducer);
+  const { newCityName, takeLocation, dailyWeather } = useSelector(
+    (state) => state.reducer
+  );
   const dispatch = useDispatch();
 
   React.useEffect(() => {
-    getCities();
-    getWeatherApi();
     getLanLat();
-    getLoaction();
-    // console.log("come here and see", takeLocation);
   }, []);
 
   // city details
-  const url = `https://jsonplaceholder.typicode.com/photos`;
-  const getCities = async () => {
-    try {
-      const response = await axios.get(url);
-      var carryData = response.data;
-      setData(carryData);
-      dispatch(getCity(carryData));
-      console.log("checking response", response);
-    } catch (error) {
-      console.log("error here", error);
-    }
-  };
+  // const url = `https://jsonplaceholder.typicode.com/photos`;
+  // const getCities = async () => {
+  //   try {
+  //     const response = await axios.get(url);
+  //     var carryData = response.data;
+  //     // setData(carryData);
+  //     dispatch(getCity(carryData));
+  //     console.log("checking response", response);
+  //   } catch (error) {
+  //     console.log("error here", error);
+  //   }
+  // };
 
   //For Position
 
@@ -62,35 +67,45 @@ const Cities = () => {
 
   const getLanLat = () => {
     Geolocation.getCurrentPosition((info) => {
-      console.log(info);
+      console.log("checking for info", info);
+      dispatch(getCurrentLocation(info));
       setPosition(info);
-      // let positionInfo = position;
-      dispatch(getCurrentLocation(position));
+      setLat(info?.coords?.latitude);
+      setLong(info?.coords?.longitude);
     });
-    console.log("checking location here aao", position);
+    console.log("checking location here aao", takeLocation);
   };
+
   const getLoaction = async () => {
     try {
       const response = await axios.get(
-        `https://api.openweathermap.org/data/2.5/onecall?lat=${position?.coords?.latitude}&lon=${position?.coords?.longitude}&exclude=hourly,minutely&units=metric&appid=${API_KEY_LOCATION}`
+        `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${long}&exclude=hourly,minutely&units=imperial&appid=${API_KEY_LOCATION}`
       );
-      console.log("saleena khan", response.data);
+      console.log("saleena khan", response.data.daily);
       var locationData = response.data.daily;
       setDayNight(locationData);
+      dispatch(getDailyWeather(locationData));
     } catch (error) {
       console.log(error);
     }
   };
+  const [loading, setLoading] = useState(false);
+  console.log("dekho", DayNight);
 
   // to see weather
   const API_KEY = `64d287ccdca74903b4362516222806`;
   const weatherUrl = `http://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${location}`;
   const getWeatherApi = async () => {
+    setLoading(true);
     try {
+      setTimeout(() => {
+        setLoading(false);
+      }, 3000);
       const WeatherResponse = await axios.get(weatherUrl);
       setWeather(WeatherResponse.data);
       console.log("weather report here", WeatherResponse);
       dispatch(getNewCity(WeatherResponse.data));
+      getLoaction();
       setLocation("");
     } catch (error) {
       console.log("error here", error);
@@ -116,16 +131,44 @@ const Cities = () => {
       otherText: "Wind Speed",
     },
   ];
+  const WEATHER = [
+    {
+      image: <Fontisto name="day-sunny" size={30} color={"black"} />,
+      text: "HAZE",
+    },
+    {
+      image: <Fontisto name="cloudy-gusts" size={30} color={"black"} />,
+      text: "CLOUD",
+      id: 2,
+    },
+    {
+      image: <Fontisto name="wind" size={30} color={"black"} />,
+      text: "WIND",
+      id: 3,
+    },
+  ];
 
-  const Day = () => <Fontisto name="day-sunny" size={30} color={"black"} />;
   const Night = () => <Fontisto name="night-clear" size={30} color={"black"} />;
+  const NightCloudy = () => (
+    <Fontisto name="night-alt-cloudy" size={30} color={"black"} />
+  );
+  const nightLightning = () => (
+    <Fontisto name="night-alt-lightning" size={30} color={"black"} />
+  );
+  const Day = () => <Fontisto name="day-sunny" size={30} color={"black"} />;
+  const DayCloudy = () => (
+    <Fontisto name="cloudy-gusts" size={30} color={"black"} />
+  );
+  const Daywind = () => <Fontisto name="wind" size={30} color={"black"} />;
 
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
         source={
           newCityName?.current?.feelslike_c > 23
-            ? require("../../assets/1.jpeg")
+            ? require("../../assets/default.jpeg")
+            : newCityName?.current?.wind_kph > 10
+            ? require("../../assets/windy.jpeg")
             : require("../../assets/rain.jpeg")
         }
         style={styles.imageContainer}
@@ -134,7 +177,7 @@ const Cities = () => {
           <View
             style={{
               flexDirection: "row",
-              margin: 10,
+              margin: Platform.OS == "ios" ? 10 : 5,
               justifyContent: "space-between",
               alignItems: "baseline",
             }}
@@ -148,9 +191,19 @@ const Cities = () => {
             />
             <TouchableOpacity onPress={getWeatherApi} style={styling.button}>
               <View style={{ flexDirection: "row" }}>
-                <Fontisto name="search" size={17} color={"black"} />
+                <Fontisto
+                  name="search"
+                  size={Platform.OS == "ios" ? 17 : 15}
+                  color={"black"}
+                />
                 <Text
-                  style={[styling.boldText, { color: "black", fontSize: 15 }]}
+                  style={[
+                    styling.boldText,
+                    {
+                      color: "black",
+                      fontSize: Platform.OS == "ios" ? 15 : 13,
+                    },
+                  ]}
                 >
                   Get City
                 </Text>
@@ -168,73 +221,138 @@ const Cities = () => {
 
           {newCityName?.location?.name != null ? (
             <>
-              <View style={styling.spaceContainer}>
-                <DateAndTime />
-                <Text
-                  style={[
-                    styling.headingText,
-                    {
-                      flexShrink: 1,
-                    },
-                  ]}
-                >
-                  {newCityName?.location?.name}
-                </Text>
-              </View>
-              <View style={styling.spaceContainer}>
-                <View
-                  style={{
-                    flexDirection: "column",
-                    alignItems: "center",
-                  }}
-                >
-                  <Text style={[styling.headingText, { fontSize: 60 }]}>
-                    {newCityName?.current?.temp_c} F
-                  </Text>
+              {loading ? (
+                <ActivityIndicator
+                  visible={loading}
+                  color="#bc2b78"
+                  size="large"
+                  style={styles.activityIndicator}
+                />
+              ) : (
+                <>
+                  <View style={styling.spaceContainer}>
+                    <DateAndTime />
+                    <Text
+                      style={[
+                        styling.headingText,
+                        {
+                          flexShrink: 1,
+                        },
+                      ]}
+                    >
+                      {newCityName?.location?.name}
+                    </Text>
+                  </View>
+                  <View style={styling.spaceContainer}>
+                    <View
+                      style={{
+                        flexDirection: "column",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text style={[styling.headingText, { fontSize: 60 }]}>
+                        {newCityName?.current?.temp_c} F
+                      </Text>
 
-                  <Text style={[styling.text, { marginVertical: 5 }]}>
-                    Feels like {newCityName?.current?.feelslike_c}
-                  </Text>
-                </View>
-                <View
-                  style={{
-                    flexDirection: "column",
-                    alignItems: "center",
-                  }}
-                >
-                  <Fontisto name="day-haze" size={70} color={"white"} />
-                  <Text style={[styling.text, { marginVertical: 5 }]}>
-                    HAZE
-                  </Text>
-                </View>
-              </View>
-              <Text style={styles.rotText}>
-                Clouds {newCityName?.current?.cloud}
-              </Text>
-              <View style={{ flexDirection: "column" }}>
-                <Text style={[styling.boldText, { marginBottom: 5 }]}>
-                  check condition
-                </Text>
-                <Text style={[styling.text, { fontSize: 15 }]}>
-                  {newCityName?.current?.condition?.text}
-                </Text>
-              </View>
-              <View style={styles.containerText}>
-                {details.map((value) => {
-                  return (
-                    <>
-                      <View style={{ alignItems: "center" }}>
-                        <Text key={value.id} style={styles.text}>
-                          {value.text}
-                        </Text>
-                        <Text key={value.id} style={styles.text}>
-                          {value.otherText}
-                        </Text>
-                      </View>
-                    </>
-                  );
-                })}
-              </View>
+                      <Text style={[styling.text, { marginVertical: 5 }]}>
+                        Feels like {newCityName?.current?.feelslike_c}
+                      </Text>
+                    </View>
+                    <View
+                      style={{
+                        alignItems: "center",
+                      }}
+                    >
+                      {newCityName?.current?.temp_c > 35 ? (
+                        <>
+                          <Fontisto
+                            name="day-haze"
+                            size={70}
+                            color={"#edcd61"}
+                          />
+                          <Text style={[styling.text, { marginVertical: 5 }]}>
+                            HAZE
+                          </Text>
+                        </>
+                      ) : newCityName?.current?.temp_c <= 28 ? (
+                        <>
+                          <Fontisto name="rain" size={70} color={"#edcd61"} />
+                          <Text style={[styling.text, { marginVertical: 5 }]}>
+                            CLOUD
+                          </Text>
+                        </>
+                      ) : (
+                        <>
+                          <Fontisto
+                            name="cloudy-gusts"
+                            size={70}
+                            color={"#edcd61"}
+                          />
+                          <Text style={[styling.text, { marginVertical: 5 }]}>
+                            CLOUD
+                          </Text>
+                        </>
+                      )}
+                    </View>
+                  </View>
+                  <View style={{ padding: 2 }}>
+                    <Text style={styles.rotText}>
+                      Clouds {newCityName?.current?.cloud}
+                    </Text>
+                  </View>
+                  <View style={styles.containerText}>
+                    {details.map((value, key) => {
+                      return (
+                        <>
+                          <View style={{ alignItems: "center" }}>
+                            <Text key={key} style={styles.text}>
+                              {value.text}
+                            </Text>
+                            <Text key={key} style={styles.text}>
+                              {value.otherText}
+                            </Text>
+                          </View>
+                        </>
+                      );
+                    })}
+                  </View>
+                  <View
+                    style={{
+                      top: "30%",
+                    }}
+                  >
+                    <Text style={[styling.boldText]}>10 Next Days</Text>
+                  </View>
+                  <FlatList
+                    data={DayNight}
+                    horizontal
+                    keyExtractor={(item, index) => item.id}
+                    renderItem={({ item }) => (
+                      <CityCard
+                        DayIcon={
+                          item?.temp?.day >= 64
+                            ? Day()
+                            : item?.temp?.day <= 63
+                            ? DayCloudy()
+                            : Daywind()
+                        }
+                        NightIcon={
+                          item?.temp?.night >= 57
+                            ? Night()
+                            : item?.temp?.night <= 55
+                            ? nightLightning()
+                            : NightCloudy()
+                        }
+                        day={item?.temp?.day}
+                        night={item?.temp?.night}
+                        onPress={() => {
+                          navigation.navigate("CitiesDetailes");
+                        }}
+                      />
+                    )}
+                  />
+                </>
+              )}
             </>
           ) : (
             <View
@@ -242,6 +360,7 @@ const Cities = () => {
                 justifyContent: "center",
                 alignItems: "center",
                 marginVertical: 20,
+                flexGrow: 2,
               }}
             >
               <Image
@@ -263,23 +382,6 @@ const Cities = () => {
               </Text>
             </View>
           )}
-
-          <FlatList
-            data={DayNight}
-            horizontal
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <CityCard
-                DayIcon={Day()}
-                NightIcon={Night()}
-                day={item?.temp?.day}
-                night={item?.temp?.night}
-                onPress={() => {
-                  navigation.navigate("CitiesDetailes");
-                }}
-              />
-            )}
-          />
         </View>
       </ImageBackground>
     </SafeAreaView>
@@ -298,23 +400,23 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   inputContainer: {
-    padding: 10,
-    width: 220,
-    borderRadius: 20,
+    padding: Platform.OS == "ios" ? 10 : 6,
+    width: Platform.OS == "ios" ? 220 : 210,
+    borderRadius: 10,
     alignSelf: "center",
     borderWidth: 3,
     borderColor: "grey",
     backgroundColor: "white",
   },
   containerText: {
-    top: "50%",
+    top: "55%",
     justifyContent: "space-between",
     flexDirection: "row",
     fontWeight: "bold",
     position: "relative",
     backgroundColor: "white",
     borderRadius: 15,
-    padding: 10,
+    padding: Platform.OS == "ios" ? 20 : 10,
   },
   text: {
     fontSize: 18,
@@ -331,8 +433,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "white",
     fontWeight: "bold",
-    right: -170,
-    // top: -40,
+    top: -10,
+    right: Platform.OS == "ios" ? -170 : -160,
     transform: [{ rotate: "270deg" }],
+  },
+  activityIndicator: {
+    height: 80,
   },
 });

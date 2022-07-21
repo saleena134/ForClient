@@ -1,3 +1,5 @@
+import { Platform } from "react-native";
+
 export default {
   text: {
     color: "white",
@@ -26,7 +28,7 @@ export default {
     borderColor: "grey",
     alignItems: "center",
     padding: 10,
-    width: 100,
+    width: Platform.OS == "ios" ? 100 : 80,
     alignSelf: "center",
   },
 };

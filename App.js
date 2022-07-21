@@ -18,12 +18,11 @@ function MyStack() {
   return (
     <Stack.Navigator
       screenOptions={{
-        useNativeDriver: true,
+        // useNativeDriver: true,
         headerShown: false,
       }}
-      initialRouteName="Cities"
+      // initialRouteName="checking"
     >
-      {/* <Stack.Screen name="Abc" component={Abc} /> */}
       <Stack.Screen name="Cities" component={Cities} />
       <Stack.Screen name="CitiesDetailes" component={CitiesDetailes} />
       <Stack.Screen name="CityCard" component={CityCard} />

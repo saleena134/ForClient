@@ -1,4 +1,4 @@
-import { GET_LOCATION, NEW_CITY, USER_CITY } from "./action";
+import { DAILY_WEATHER, GET_LOCATION, NEW_CITY, USER_CITY } from "./action";
 
 const initialstate = {
   cityName: [],
@@ -14,6 +14,8 @@ export const reducer = (state = initialstate, action) => {
       return { ...state, newCityName: action.payload };
     case GET_LOCATION:
       return { ...state, takeLocation: action.payload };
+    case DAILY_WEATHER:
+      return { ...state, dailyWeather: action.payload };
     default:
       return state;
   }

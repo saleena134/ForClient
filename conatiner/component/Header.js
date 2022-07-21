@@ -1,5 +1,11 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import styling from "./styling";
 
@@ -14,12 +20,12 @@ const Header = ({ children, title, navigation, backScreen, ...props }) => (
 );
 const styles = StyleSheet.create({
   headerContainer: {
-    marginTop: 10,
-    width: 380,
+    // marginTop: 10,
+    width: Platform.OS == "ios" ? 380 : 360,
     backgroundColor: "#edcd61",
-    borderBottomStartRadius: 70,
-    borderBottomEndRadius: 70,
-    padding: 20,
+    borderBottomStartRadius: Platform.OS == "ios" ? 70 : 90,
+    borderBottomEndRadius: Platform.OS == "ios" ? 70 : 90,
+    padding: Platform.OS == "ios" ? 20 : 15,
     flexDirection: "row",
   },
 });

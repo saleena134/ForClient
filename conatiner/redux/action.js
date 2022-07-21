@@ -1,6 +1,7 @@
 export const USER_CITY = "USER_CITY";
 export const NEW_CITY = "NEW_CITY";
 export const GET_LOCATION = "GET_LOCATION";
+export const DAILY_WEATHER = "DAILY_WEATHER";
 
 export const getCity = (cityName) => (dispatch) => {
   dispatch({
@@ -19,5 +20,11 @@ export const getCurrentLocation = (takeLocation) => (dispatch) => {
   dispatch({
     type: GET_LOCATION,
     payload: takeLocation,
+  });
+};
+export const getDailyWeather = (dailyWeather) => (dispatch) => {
+  dispatch({
+    type: DAILY_WEATHER,
+    payload: dailyWeather,
   });
 };
