@@ -54,6 +54,12 @@ const Info = () => {
         checkout -b abc and git add . And git statusgit commit -m “any message”
         and git push origin abc now your can check your GitHub with new repo
         with project
+        {/* Other way */}
+        https://docs.github.com/en/get-started/importing-your-projects-to-github/importing-source-code-to-github/adding-locally-hosted-code-to-github
+        1-Open terminal 2-Cd {YOUR_FOLDER}
+        3-git init -b main (Create Branch) 4-git add . And git commit -m "First
+        commit" 5-git remote add origin {REMOTE_URL}
+        6-git push -u origin main(your branch)
       </Text>
     </View>
   );

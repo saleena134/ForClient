@@ -13,7 +13,7 @@ import Abc from "./conatiner/ForClient/Abc";
 import Locations from "./conatiner/component/Locations";
 
 const Stack = createStackNavigator();
-
+// here
 function MyStack() {
   return (
     <Stack.Navigator
