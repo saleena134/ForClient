@@ -278,7 +278,7 @@ const Cities = () => {
                         <>
                           <Fontisto name="rain" size={70} color={"#edcd61"} />
                           <Text style={[styling.text, { marginVertical: 5 }]}>
-                            CLOUD
+                            RAIN
                           </Text>
                         </>
                       ) : (
